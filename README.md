@@ -91,15 +91,21 @@ py -3.8 main.py predict --image путь\к\изображению.jpg
 
 ## GitHub
 
-Создайте пустой репозиторий на GitHub, затем из папки проекта выполните команды, подставив свой URL:
+Публичный репозиторий этой работы: https://github.com/SilverVy/mlops-data-versioning-practical-work-3
+
+Чтобы получить копию проекта на Windows:
 
 ```bat
-git init
+git clone https://github.com/SilverVy/mlops-data-versioning-practical-work-3.git
+cd mlops-data-versioning-practical-work-3
+```
+
+После изменения кода сохраните его в GitHub:
+
+```bat
 git add .
-git commit -m "Практическая работа: MLOps и версионирование"
-git branch -M main
-git remote add origin https://github.com/<имя-пользователя>/<имя-репозитория>.git
-git push -u origin main
+git commit -m "Обновление практической работы"
+git push origin main
 ```
 
 Учетные данные GitHub не следует помещать в исходный код или отправлять в чат. Папки `data/raw`, `data/processed` и `artifacts` намеренно не коммитятся.
