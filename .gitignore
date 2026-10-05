@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.pythonlibs/
+
+# Local datasets and experiment artifacts
+data/raw/
+data/processed/
+artifacts/
+
+# Uploaded assignment material and rendered previews
+attached_assets/
+.agents/outputs/
+.agents/scripts/
