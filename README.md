@@ -2,7 +2,7 @@
 
 **Тема:** версионирование данных и моделей  
 **Вариант:** классификация видов бабочек (Butterfly Species Classification Dataset)  
-**Язык:** Python 3.8; проект также запускается на актуальных версиях Python.
+**Язык:** Python 3.8
 
 ## Что реализовано
 
@@ -18,22 +18,11 @@
 
 Для быстрой проверки есть генератор синтетических изображений. Для реального эксперимента добавлен загрузчик поднабора фотографий из GBIF: три вида, по 50 изображений на класс, только лицензии CC0 1.0 и CC BY 4.0. Источники и атрибуция сохраняются в локальном `data/raw/butterflies/sources.csv`.
 
-## Установка на Windows 7
-
-Используйте Python 3.8.10 и 64-разрядную версию Windows/Python, если система 64-разрядная. В командной строке из каталога проекта выполните:
-
-```bat
-py -3.8 -m pip install --upgrade pip
-py -3.8 -m pip install -r requirements.txt
-```
-
-Если команда `py -3.8` не распознается, запустите команды через установленный `python.exe` версии 3.8. Для загрузки фотографий нужен Интернет; загрузчик обращается к публичному GBIF API без ключа. Обучение работает локально. Проект не требует DVC, Git LFS или базы данных.
-
 ## Быстрая проверка
 
 ```bat
-py -3.8 main.py demo
-py -3.8 main.py history
+py main.py demo
+py main.py history
 ```
 
 Первая команда создаст 72 синтетических изображения, аугментированную версию набора и выполнит шесть экспериментов: три модели на исходной и расширенной выборках. Повторный запуск использует уже существующую папку демонстрационных данных, не перезаписывая ее.
@@ -43,39 +32,22 @@ py -3.8 main.py history
 Скачать и использовать набор, на котором выполнены эксперименты в отчете:
 
 ```bat
-py -3.8 scripts\download_gbif_butterflies.py --images-per-class 50 --max-records 6000
-py -3.8 main.py dataset-info --data-dir data/raw/butterflies
-py -3.8 main.py run --data-dir data/raw/butterflies --test-size 0.25 --augment-factor 3 --image-size 24 --seed 42
-py -3.8 main.py history
+py scripts\download_gbif_butterflies.py --images-per-class 50 --max-records 6000
+py main.py dataset-info --data-dir data/raw/butterflies
+py main.py run --data-dir data/raw/butterflies --test-size 0.25 --augment-factor 3 --image-size 24 --seed 42
+py main.py history
 ```
 
 Загрузчик сохраняет по одному изображению на наблюдение, удаляет точные дубликаты и записывает лицензию и авторство каждого снимка в `sources.csv`. По умолчанию он не перезаписывает непустой каталог; для другого места используйте `--output-dir`.
 
-Эти изображения загружаются из GBIF/iNaturalist под лицензиями CC0 1.0 и CC BY 4.0. В исходном публичном репозитории хранятся загрузчик и отчет, но не фотографии, модели или результаты локальных запусков.
-
-Для собственного набора подготовьте папки — одну папку верхнего уровня на каждый класс, например:
-
-```text
-data/
-└── raw/
-    └── butterflies/
-        ├── monarch/
-        │   ├── image001.jpg
-        │   └── image002.jpg
-        ├── swallowtail/
-        │   ├── image001.jpg
-        │   └── image002.jpg
-        └── blue_morpho/
-            ├── image001.jpg
-            └── image002.jpg
-```
+Эти изображения загружаются из GBIF/iNaturalist под лицензиями CC0 1.0 и CC BY 4.0.
 
 Поддерживаются JPG, JPEG, PNG и BMP; вложенные каталоги внутри папки класса также обрабатываются. Для надежного стратифицированного разделения у каждого класса должно быть не меньше двух изображений; для осмысленного результата используйте существенно больше.
 
 ```bat
-py -3.8 main.py dataset-info --data-dir data/raw/butterflies
-py -3.8 main.py run --data-dir data/raw/butterflies --test-size 0.25 --augment-factor 3 --image-size 16 --seed 42
-py -3.8 main.py history
+py main.py dataset-info --data-dir data/raw/butterflies
+py main.py run --data-dir data/raw/butterflies --test-size 0.25 --augment-factor 3 --image-size 16 --seed 42
+py main.py history
 ```
 
 Допустимые значения параметров:
@@ -90,8 +62,8 @@ py -3.8 main.py history
 Скопируйте ID нужного эксперимента из `history` и выполните:
 
 ```bat
-py -3.8 main.py select --experiment-id exp_ГГГГММДД_ЧЧММСС_ИД
-py -3.8 main.py predict --image путь\к\изображению.jpg
+py main.py select --experiment-id exp_ГГГГММДД_ЧЧММСС_ИД
+py main.py predict --image путь\к\изображению.jpg
 ```
 
 Модель, ее описание и результаты выбора сохраняются в `artifacts/selected/`. Предсказание использует те же размер изображения и параметры модели, что были записаны в выбранном эксперименте.
@@ -100,33 +72,12 @@ py -3.8 main.py predict --image путь\к\изображению.jpg
 
 Версия набора вычисляется из SHA-256 исходных файлов и настроек аугментации. Манифест фиксирует связь между каждым производным изображением и его оригиналом. История экспериментов содержит seed, разбиение, вид модели, ее параметры, метрики, версию датасета, версии Python и библиотек, контрольную сумму файла модели и путь к артефакту.
 
-Вместо DVC используется небольшой локальный трекер на JSONL/CSV и файловые снимки с контрольными суммами. Это сохраняет требуемые функции истории, выбора модели и воспроизводимости без дополнительного сервиса. Исходный код можно хранить на GitHub; изображения и артефакты экспериментов исключены из Git, чтобы не публиковать набор данных или большие бинарные файлы.
-
-## GitHub
-
-Публичный репозиторий этой работы: https://github.com/SilverVy/mlops-data-versioning-practical-work-3
-
-Чтобы получить копию проекта на Windows:
-
-```bat
-git clone https://github.com/SilverVy/mlops-data-versioning-practical-work-3.git
-cd mlops-data-versioning-practical-work-3
-```
-
-После изменения кода сохраните его в GitHub:
-
-```bat
-git add .
-git commit -m "Обновление практической работы"
-git push origin main
-```
-
-Учетные данные GitHub не следует помещать в исходный код или отправлять в чат. Папки `data/raw`, `data/processed` и `artifacts` намеренно не коммитятся.
+Вместо DVC используется небольшой локальный трекер на JSONL/CSV и файловые снимки с контрольными суммами. Это сохраняет требуемые функции истории, выбора модели и воспроизводимости без дополнительного сервиса.
 
 ## Самопроверка
 
 ```bat
-py -3.8 -m unittest discover -s tests -v
+py -m unittest discover -s tests -v
 ```
 
 ## Структура проекта
@@ -136,6 +87,5 @@ main.py                   командный интерфейс
 butterfly_ml/              подготовка данных, модели, конвейер и трекер
 scripts/                   загрузка и атрибуция набора из GBIF
 tests/                     автоматические проверки
-reports/REPORT.md          отчет по практической работе
 requirements.txt           совместимые зависимости
 ```
